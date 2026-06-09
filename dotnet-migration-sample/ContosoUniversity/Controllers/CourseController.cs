@@ -14,62 +14,62 @@
  * limitations under the License
  */
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
 using System.Linq;
-using System.Net;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
-using System.Data.Entity.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Controllers
 {
     public class CourseController : Controller
     {
-        private SchoolContext db = null;
+        private readonly SchoolContext _context;
 
-        public CourseController(SchoolContext db)
+        public CourseController(SchoolContext context)
         {
-            this.db = db;
+            _context = context;
         }
 
         // GET: Course
-        public ActionResult Index(int? SelectedDepartment)
+        public async Task<IActionResult> Index(int? SelectedDepartment)
         {
-            var departments = db.Departments.OrderBy(q => q.Name).ToList();
+            var departments = _context.Departments.OrderBy(q => q.Name).ToList();
             ViewBag.SelectedDepartment = new SelectList(departments, "DepartmentID", "Name", SelectedDepartment);
             int departmentID = SelectedDepartment.GetValueOrDefault();
 
-            IQueryable<Course> courses = db.Courses
+            IQueryable<Course> courses = _context.Courses
                 .Where(c => !SelectedDepartment.HasValue || c.DepartmentID == departmentID)
                 .OrderBy(d => d.CourseID)
                 .Include(d => d.Department);
-            var sql = courses.ToString();
-            return View(courses.ToList());
+            return View(await courses.ToListAsync());
         }
 
         // GET: Course/Details/5
-        public ActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
-                return new BadRequestResult();
+                return NotFound();
             }
-            Course course = db.Courses.Find(id);
+
+            var course = await _context.Courses
+                .Include(c => c.Department)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.CourseID == id);
+
             if (course == null)
             {
-                return new NotFoundResult();
+                return NotFound();
             }
+
             return View(course);
         }
 
 
-        public ActionResult Create()
+        public IActionResult Create()
         {
             PopulateDepartmentsDropDownList();
             return View();
@@ -77,36 +77,29 @@ namespace ContosoUniversity.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind("CourseID,Title,Credits,DepartmentID")]Course course)
+        public async Task<IActionResult> Create([Bind("CourseID,Title,Credits,DepartmentID")]Course course)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    db.Courses.Add(course);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-            }
-            catch (RetryLimitExceededException /* dex */)
-            {
-                //Log the error (uncomment dex variable name and add a line here to write a log.)
-                ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                _context.Add(course);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
             PopulateDepartmentsDropDownList(course.DepartmentID);
             return View(course);
         }
 
-        public ActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
-                return new BadRequestResult();
+                return NotFound();
             }
-            Course course = db.Courses.Find(id);
+
+            var course = await _context.Courses.FindAsync(id);
             if (course == null)
             {
-                return new NotFoundResult();
+                return NotFound();
             }
             PopulateDepartmentsDropDownList(course.DepartmentID);
             return View(course);
@@ -114,26 +107,29 @@ namespace ContosoUniversity.Controllers
 
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditPost(int? id)
+        public async Task<IActionResult> EditPost(int? id)
         {
             if (id == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-            var courseToUpdate = db.Courses.Find(id);
-            if (await TryUpdateModelAsync(courseToUpdate))
+            var courseToUpdate = await _context.Courses.FirstOrDefaultAsync(c => c.CourseID == id);
+            if (await TryUpdateModelAsync<Course>(courseToUpdate,
+                "",
+                c => c.Title, c => c.Credits, c => c.DepartmentID))
             {
                 try
                 {
-                    db.SaveChanges();
-
-                    return RedirectToAction("Index");
+                    await _context.SaveChangesAsync();
                 }
-                catch (RetryLimitExceededException /* dex */)
+                catch (DbUpdateException /* ex */)
                 {
-                    //Log the error (uncomment dex variable name and add a line here to write a log.
-                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                    //Log the error (uncomment ex variable name and write a log.)
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                        "Try again, and if the problem persists, " +
+                        "see your system administrator.");
                 }
+                return RedirectToAction(nameof(Index));
             }
             PopulateDepartmentsDropDownList(courseToUpdate.DepartmentID);
             return View(courseToUpdate);
@@ -141,61 +137,57 @@ namespace ContosoUniversity.Controllers
 
         private void PopulateDepartmentsDropDownList(object selectedDepartment = null)
         {
-            var departmentsQuery = from d in db.Departments
+            var departmentsQuery = from d in _context.Departments
                                    orderby d.Name
                                    select d;
-            ViewBag.DepartmentID = new SelectList(departmentsQuery, "DepartmentID", "Name", selectedDepartment);
+            ViewBag.DepartmentID = new SelectList(departmentsQuery.AsNoTracking(), "DepartmentID", "Name", selectedDepartment);
         }
 
 
         // GET: Course/Delete/5
-        public ActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
-                return new BadRequestResult();
+                return NotFound();
             }
-            Course course = db.Courses.Find(id);
+
+            var course = await _context.Courses
+                .Include(c => c.Department)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.CourseID == id);
             if (course == null)
             {
-                return new NotFoundResult();
+                return NotFound();
             }
+
             return View(course);
         }
 
         // POST: Course/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Course course = db.Courses.Find(id);
-            db.Courses.Remove(course);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            var course = await _context.Courses.FindAsync(id);
+            _context.Courses.Remove(course);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        public ActionResult UpdateCourseCredits()
+        public IActionResult UpdateCourseCredits()
         {
             return View();
         }
 
         [HttpPost]
-        public ActionResult UpdateCourseCredits(int? multiplier)
+        public async Task<IActionResult> UpdateCourseCredits(int? multiplier)
         {
             if (multiplier != null)
             {
-                ViewBag.RowsAffected = db.Database.ExecuteSqlCommand("UPDATE Course SET Credits = Credits * {0}", multiplier);
+                ViewBag.RowsAffected = await _context.Database.ExecuteSqlRawAsync("UPDATE public.\"Course\" SET \"Credits\" = \"Credits\" * {0}", multiplier);
             }
             return View();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

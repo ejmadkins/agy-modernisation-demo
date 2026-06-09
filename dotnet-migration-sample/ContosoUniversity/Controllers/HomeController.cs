@@ -14,60 +14,49 @@
  * limitations under the License
  */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ContosoUniversity.DAL;
 using ContosoUniversity.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContosoUniversity.Controllers
 {
     public class HomeController : Controller
     {
-        private SchoolContext db = null;
+        private readonly SchoolContext _context;
 
-        public HomeController(SchoolContext db)
+        public HomeController(SchoolContext context)
         {
-            this.db = db;
+            _context = context;
         }
 
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View();
         }
 
-        public ActionResult About()
+        public async Task<ActionResult> About()
         {
-            // Commenting out LINQ to show how to do the same thing in SQL.
-            //IQueryable<EnrollmentDateGroup> = from student in db.Students
-            //           group student by student.EnrollmentDate into dateGroup
-            //           select new EnrollmentDateGroup()
-            //           {
-            //               EnrollmentDate = dateGroup.Key,
-            //               StudentCount = dateGroup.Count()
-            //           };
+            var data = await _context.Students
+                .GroupBy(s => s.EnrollmentDate)
+                .Select(g => new EnrollmentDateGroup
+                {
+                    EnrollmentDate = g.Key,
+                    StudentCount = g.Count()
+                })
+                .ToListAsync();
 
-            // SQL version of the above LINQ code.
-            string query = "SELECT EnrollmentDate, COUNT(*) AS StudentCount "
-                + "FROM Person "
-                + "WHERE Discriminator = 'Student' "
-                + "GROUP BY EnrollmentDate";
-            IEnumerable<EnrollmentDateGroup> data = db.Database.SqlQuery<EnrollmentDateGroup>(query);
-
-            return View(data.ToList());
+            return View(data);
         }
-        public ActionResult Contact()
+
+        public IActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
 
             return View();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            db.Dispose();
-            base.Dispose(disposing);
         }
     }
 }
