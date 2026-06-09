@@ -120,7 +120,7 @@ COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
 echo "Binding IAM roles for service account: $COMPUTE_SA"
 ROLES=(
-  "roles/sql.client"
+  "roles/cloudsql.client"
   "roles/storage.objectViewer"
   "roles/logging.logWriter"
   "roles/artifactregistry.reader"
