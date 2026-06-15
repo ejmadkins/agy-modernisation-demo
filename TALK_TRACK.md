@@ -44,7 +44,7 @@ codmod create full \
 **Spoken Narrative**:
 > "Running a full assessment analyzes class diagrams, dependencies, SQL configurations, and compatibility APIs. Since a full deep-dive assessment takes around 15 minutes, let's load our pre-generated report so we can inspect the results immediately."
 
-**Presenter Action**: Run `./reset.sh 1-backup` and open the pre-generated report in your web browser (or explain how the assessment generated a report like the one in `modernization-report-sample/third_party/codmod-full-report-dotnet-mod.html`).
+**Presenter Action**: Open the pre-generated `./codmod-full-report-dotnet-mod.html` report in your web browser (it is already available in the root folder of the project across all stages, or run `./reset.sh 1-backup` to load the Stage 1 backup state).
 
 ```bash
 ./reset.sh 1-backup
