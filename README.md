@@ -31,7 +31,7 @@ The demo guides the audience through three progressive stages, mirroring the pat
 
 | Stage | Branch | Live Action | backup Branch | Backup Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| **Stage 1: Assessment** | `stage-1-assessment` | Run `codmod` to analyze the legacy app. | `stage-1-backup` | Shows pre-generated HTML assessment report instantly. |
+| **Stage 1: Assessment** | `stage-1-assessment` | Run `codmod` to analyze the legacy app (pre-generated report is already in the root). | `stage-1-backup` | Shows pre-generated HTML assessment report instantly. |
 | **Stage 2: Modernization** | `stage-2-modernize` | Use `agy` with `.antigravity.md` and `dotnet-modernizer` skill to refactor the app. | `stage-2-backup` | Provides fully modernized C# code + `Dockerfile` + local `compose.yaml`. |
 | **Stage 3: Deployment** | `stage-3-deploy` | Build with Cloud Build & deploy container to Cloud Run live. | `stage-3-backup` | Live working URL link + verified deployed configurations. |
 
