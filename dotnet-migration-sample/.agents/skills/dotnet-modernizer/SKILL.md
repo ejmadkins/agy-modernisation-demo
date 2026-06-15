@@ -52,14 +52,20 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 ### PostgreSQL RowVersion Concurrency Handling
 SQL Server uses `byte[]` with `[Timestamp]` (RowVersion) columns for optimistic concurrency. PostgreSQL does not have a binary RowVersion column, but it has a built-in system column named `xmin` (representing the transaction ID of the last modification) which works perfectly as a concurrency token.
 
-Map legacy `RowVersion` properties to `xmin` in `OnModelCreating`:
+1. **Entity Definition**: Refactor the entity class (e.g. `Department.cs`) property type from `byte[]` to `uint` (which corresponds to PostgreSQL's native `xid` type):
+```csharp
+[Timestamp]
+public uint RowVersion { get; set; }
+```
 
+2. **Model Mapping**: In `OnModelCreating`, mark the property using `.IsRowVersion()` (do NOT use `.UseXminAsConcurrencyToken()` as it is obsolete and throws a compilation error in modern Npgsql 8.0+):
 ```csharp
 modelBuilder.Entity<Department>()
     .Property(d => d.RowVersion)
-    .IsRowVersion()
-    .UseXminAsConcurrencyToken();
+    .IsRowVersion();
 ```
+
+3. **Controller/View Handlers**: Update any post parameters or action arguments handling RowVersion from `byte[]` to `uint` (e.g., `public async Task<ActionResult> Edit(int? id, uint rowVersion)`).
 
 ### DbInitializer & Seeding
 In EF Core, replace legacy initializers (e.g. `DropCreateDatabaseIfModelChanges`) with standard initialization logic inside a `DbInitializer` class called at application startup:
@@ -93,6 +99,9 @@ Consolidate `Startup.cs` configuration and registrations directly into the unifi
 ```csharp
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.DAL;
+
+// Enable legacy timestamp behavior to handle Unspecified DateTime kinds from forms & seeder
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -168,4 +177,41 @@ app.Lifetime.ApplicationStopping.Register(() =>
     Console.WriteLine("SIGTERM received. Cleaning up connections...");
     // Perform any custom cleanups here
 });
+```
+
+---
+
+## 5. Performance & Build Optimizations
+
+To reduce build times, speed up the development loop, and optimize runtime performance in cloud serverless deployments, always implement the following:
+
+### Dockerfile NuGet Cache Mount
+Use `--mount=type=cache` in your `Dockerfile` for package restoring to avoid downloading packages from scratch when the `.csproj` updates:
+```dockerfile
+# Copy project files and restore dependencies utilizing NuGet cache
+COPY ["ContosoUniversity.csproj", "./"]
+RUN --mount=type=cache,target=/root/.nuget/packages \
+    dotnet restore "ContosoUniversity.csproj"
+```
+
+### Context Size Exclusions (`.dockerignore`)
+Add a `.dockerignore` file in the root directory to prevent sending massive local build files (`bin/`, `obj/`) to the Docker build daemon:
+```text
+bin/
+obj/
+.git/
+.vs/
+```
+
+### DbContext Pooling (`AddDbContextPool`)
+Switch from standard `AddDbContext` to `AddDbContextPool` in `Program.cs` to reuse context instances and reduce memory allocation overhead in high-throughput stateless environments (like Google Cloud Run):
+```csharp
+builder.Services.AddDbContextPool<SchoolContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("SchoolContext")));
+```
+
+### Read-Only Queries (`AsNoTracking`)
+When reading data that won't be edited or saved back to the database in the same request (e.g., Index, Details, Statistics pages), use `.AsNoTracking()` to improve query performance and reduce tracking memory:
+```csharp
+var students = db.Students.AsNoTracking();
 ```
