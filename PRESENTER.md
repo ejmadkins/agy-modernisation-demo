@@ -36,11 +36,8 @@ This cheat-sheet provides all commands, paths, and configurations needed to deli
     --intent=MICROSOFT_MODERNIZATION \
     --optional-sections "files,classes"
   ```
-* **Fallback Command**:
-  ```bash
-  ./reset.sh 1-backup
-  ```
-  Open `modernization-report-sample/third_party/codmod-full-report-dotnet-mod.html` in Chrome to display the report immediately.
+* **Fallback**:
+  Open `./codmod-full-report-dotnet-mod.html` in Chrome to display the report immediately (available in the project root across all branches).
 
 ---
 
