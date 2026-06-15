@@ -31,4 +31,3 @@ bun.lockb
 .env.*.local
 
 # Assessment reports
-codmod-full-report-dotnet-mod.html
