@@ -77,7 +77,10 @@ echo ""
 
 case "$STAGE" in
   1)
-    echo "Run the Migration Center App Modernization Assessment:"
+    echo "Open the pre-generated Migration Center App Modernization Assessment report:"
+    echo "  ./codmod-full-report-dotnet-mod.html"
+    echo ""
+    echo "(Optional) If you ever want to re-generate this report, run:"
     echo "  codmod create full --codebase ./dotnet-migration-sample --output-path ./codmod-full-report-dotnet-mod.html --experiments=enable_pdf,enable_images --improve-fidelity --intent=MICROSOFT_MODERNIZATION --optional-sections \"files,classes\""
     ;;
   2)

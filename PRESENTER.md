@@ -26,7 +26,10 @@ This cheat-sheet provides all commands, paths, and configurations needed to deli
   ```bash
   ./reset.sh 1
   ```
-* **Live Action**: Explain the legacy structure, then run the codmod command (or show the pre-generated one):
+* **Live Action**: Explain the legacy structure, then open the pre-generated assessment report:
+  - Open `./codmod-full-report-dotnet-mod.html` in Chrome to display the report immediately.
+
+  *(Note: Re-generating a new report takes around 15 minutes. If you ever need the command for reference, it is:)*
   ```bash
   codmod create full \
     --codebase ./dotnet-migration-sample \
@@ -36,8 +39,6 @@ This cheat-sheet provides all commands, paths, and configurations needed to deli
     --intent=MICROSOFT_MODERNIZATION \
     --optional-sections "files,classes"
   ```
-* **Fallback**:
-  Open `./codmod-full-report-dotnet-mod.html` in Chrome to display the report immediately (available in the project root across all branches).
 
 ---
 
