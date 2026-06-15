@@ -29,24 +29,27 @@
 > "Before refactoring a single line of code, any senior cloud architect starts with an assessment. Google Cloud provides the **Migration Center App Modernization Assessment tool**, or `codmod` CLI, to analyze our codebase and give us an exact readiness report."
 
 **Presenter Action**: Point out the un-modernized files in `dotnet-migration-sample/ContosoUniversity/ContosoUniversity.csproj` using your editor or cat command.
-Show the command to run the assessment:
+Explain that the Migration Center App Modernization Assessment tool (`codmod` CLI) was used to analyze our codebase and generate a comprehensive readiness report.
+
+Show the command used to run the assessment for reference:
 
 ```bash
-codmod create full \
-  --codebase ./dotnet-migration-sample \
-  --output-path ./codmod-full-report-dotnet-mod.html \
-  --experiments=enable_pdf,enable_images \
-  --improve-fidelity \
-  --intent=MICROSOFT_MODERNIZATION \
-  --optional-sections "files,classes"
+# codmod create full \
+#   --codebase ./dotnet-migration-sample \
+#   --output-path ./codmod-full-report-dotnet-mod.html \
+#   --experiments=enable_pdf,enable_images \
+#   --improve-fidelity \
+#   --intent=MICROSOFT_MODERNIZATION \
+#   --optional-sections "files,classes"
 ```
 
 **Spoken Narrative**:
-> "Running a full assessment analyzes class diagrams, dependencies, SQL configurations, and compatibility APIs. Since a full deep-dive assessment takes around 15 minutes, let's load our pre-generated report so we can inspect the results immediately."
+> "Running a full assessment analyzes class diagrams, dependencies, SQL configurations, and compatibility APIs. Since a full assessment is a deep-dive process, we've pre-run this assessment and committed the full interactive HTML report directly to our repository root. Let's open and inspect the results immediately."
 
-**Presenter Action**: Open the pre-generated `./codmod-full-report-dotnet-mod.html` report in your web browser (it is already available in the root folder of the project across all stages, or run `./reset.sh 1-backup` to load the Stage 1 backup state).
+**Presenter Action**: Open the pre-generated `./codmod-full-report-dotnet-mod.html` report in your web browser.
 
 ```bash
+# (Optional) You can still load the Stage 1 backup state using:
 ./reset.sh 1-backup
 ```
 
