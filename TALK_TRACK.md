@@ -11,72 +11,24 @@
 **Spoken Narrative**:
 > "Modernizing legacy applications is one of the most common—and most painful—tasks facing enterprise developers. Today, we're taking a classic monolithic ASP.NET MVC application, **Contoso University**, which targets old .NET versions and Entity Framework 6 on SQL Server, and we're going to modernize it.
 >
-> We will upgrade it to **.NET 8 (Core)**, refactor the database layer to **PostgreSQL**, make it compliant with serverless container platforms, and deploy it live to **Google Cloud Run** in three streamlined stages: **Assessment**, **Modernization**, and **Deployment**.
+> We will upgrade it to **.NET 8 (Core)**, refactor the database layer to **PostgreSQL**, make it compliant with serverless container platforms, and deploy it live to **Google Cloud Run** in two streamlined stages: **Modernization** and **Deployment**.
 >
-> To do this, we'll be utilizing the power of Google's **Antigravity CLI**—a tool that does more than write simple code suggestions; it acts as an intelligent agent capable of architectural planning, visual checking, and platform verification."
+> To do this, we'll be utilizing the power of Google's **Antigravity CLI**—a tool that does more than write simple code suggestions; it acts as an intelligent agent capable of architectural planning, containerization, and platform verification."
 
 ---
 
-## 2. Stage 1: Assessment (1:00 - 3:30)
+## 2. Stage 1: Modernization (1:00 - 5:30)
 
-**Presenter Action**: Run `./reset.sh 1` in the terminal to initialize the environment.
+**Presenter Action**: Run `./reset.sh 1` to configure Stage 1.
 
 ```bash
 ./reset.sh 1
 ```
 
-**Spoken Narrative**:
-> "Before refactoring a single line of code, any senior cloud architect starts with an assessment. Google Cloud provides the **Migration Center App Modernization Assessment tool**, or `codmod` CLI, to analyze our codebase and give us an exact readiness report."
-
-**Presenter Action**: Point out the un-modernized files in `dotnet-migration-sample/ContosoUniversity/ContosoUniversity.csproj` using your editor or cat command.
-Explain that the Migration Center App Modernization Assessment tool (`codmod` CLI) was used to analyze our codebase and generate a comprehensive readiness report.
-
-Show the command used to run the assessment for reference:
-
-```bash
-# codmod create full \
-#   --codebase ./dotnet-migration-sample \
-#   --output-path ./codmod-full-report-dotnet-mod.html \
-#   --experiments=enable_pdf,enable_images \
-#   --improve-fidelity \
-#   --intent=MICROSOFT_MODERNIZATION \
-#   --optional-sections "files,classes"
-```
-
-**Spoken Narrative**:
-> "Running a full assessment analyzes class diagrams, dependencies, SQL configurations, and compatibility APIs. Since a full assessment is a deep-dive process, we've pre-run this assessment and committed the full interactive HTML report directly to our repository root. Let's open and inspect the results immediately."
-
-**Presenter Action**: Open the pre-generated `./codmod-full-report-dotnet-mod.html` report in your web browser.
-
-```bash
-# (Optional) You can still load the Stage 1 backup state using:
-./reset.sh 1-backup
-```
-
-**Spoken Narrative**:
-> "Here is our modernization report. Looking at the results, we have some critical modernisation needs:
->
-> 1. **Framework Update**: Target framework must be upgraded to .NET 8.0.
-> 2. **ORM migration**: Replace Entity Framework 6 with Entity Framework Core (`Microsoft.EntityFrameworkCore`).
-> 3. **Database engine conversion**: Refactor SQL Server-specific syntax and drivers to PostgreSQL (`Npgsql`).
-> 4. **Cloud Run compliance**: Ensure the container binds to the proper `PORT` environment variable and writes structured JSON logs to standard output for Google Cloud Logging ingestion.
->
-> Now that we have a clear, data-driven plan, let's let Antigravity do the heavy lifting."
-
----
-
-## 3. Stage 2: Modernization (3:30 - 7:30)
-
-**Presenter Action**: Run `./reset.sh 2` to configure Stage 2.
-
-```bash
-./reset.sh 2
-```
-
 **Presenter Action**: Open `.antigravity.md` and `.agents/skills/dotnet-modernizer/SKILL.md`.
 
 **Spoken Narrative**:
-> "In Stage 2, we introduce the **Antigravity CLI**. But instead of giving a generic prompt and getting unstructured suggestions, we configure Antigravity using **Rules** and **Skills**.
+> "In Stage 1, we introduce the **Antigravity CLI**. But instead of giving a generic prompt and getting unstructured suggestions, we configure Antigravity using **Rules** and **Skills**.
 >
 > First, `.antigravity.md` defines our developer workflow: analyze the files, draft a comprehensive plan, refactor each class, generate docker configurations, compile, and run local verification.
 >
@@ -90,12 +42,12 @@ agy "modernize this .NET application to .NET 8, convert EF6 to EF Core, use Post
 ```
 
 **Spoken Narrative**:
-> "Antigravity begins by analyzing the project and compiling a step-by-step implementation plan. Because the modernization takes around 20 minutes to download NuGet packages, compile, and run, let's switch to our Stage 2 backup branch to inspect the fully modernized, working application."
+> "Antigravity begins by analyzing the project and compiling a step-by-step implementation plan. Because the modernization takes around 20 minutes to download NuGet packages, compile, and run, let's switch to our Stage 1 backup branch to inspect the fully modernized, working application."
 
-**Presenter Action**: Run `./reset.sh 2-backup` and open `dotnet-migration-sample/ContosoUniversity/Program.cs` and `Dockerfile`.
+**Presenter Action**: Run `./reset.sh 1-backup` and open `dotnet-migration-sample/ContosoUniversity/Program.cs` and `Dockerfile`.
 
 ```bash
-./reset.sh 2-backup
+./reset.sh 1-backup
 ```
 
 **Spoken Narrative**:
@@ -138,12 +90,12 @@ cd ..
 
 ---
 
-## 4. Stage 3: Deployment (7:30 - 10:00)
+## 3. Stage 2: Deployment (5:30 - 8:30)
 
-**Presenter Action**: Run `./reset.sh 3` to switch to the deploy stage.
+**Presenter Action**: Run `./reset.sh 2` to switch to the deploy stage.
 
 ```bash
-./reset.sh 3
+./reset.sh 2
 ```
 
 **Spoken Narrative**:
@@ -172,12 +124,12 @@ gcloud run deploy contoso-university \
 **Spoken Narrative**:
 > "Because the database, container registry, and service account IAM bindings are already set up, building the image on Cloud Build and deploying it to Cloud Run finishes in seconds.
 >
-> Let's transition to our completed Stage 3 backup branch to view the final, deployed live link."
+> Let's transition to our completed Stage 2 backup branch to view the final, deployed live link."
 
-**Presenter Action**: Run `./reset.sh 3-backup`.
+**Presenter Action**: Run `./reset.sh 2-backup`.
 
 ```bash
-./reset.sh 3-backup
+./reset.sh 2-backup
 ```
 
 **Spoken Narrative**:
@@ -187,13 +139,12 @@ gcloud run deploy contoso-university \
 
 ---
 
-## 5. Conclusion (10:00 - 11:00)
+## 4. Conclusion (8:30 - 9:30)
 
 **Spoken Narrative**:
 > "To summarize what we saw today:
 >
-> 1. **Assess first**: We generated a detailed Migration Center modernization report to locate technical debt.
-> 2. **Standardize using Skills**: We used Antigravity CLI with specific skills to enforce enterprise architectural patterns, logging, and database changes automatically.
-> 3. **Verify and Deploy**: We validated the modernized service locally with Docker Compose, and deployed it seamlessly to Google Cloud Run.
+> 1. **Standardize using Skills**: We used Antigravity CLI with specific skills to enforce enterprise architectural patterns, logging, and database changes automatically.
+> 2. **Verify and Deploy**: We validated the modernized service locally with Docker Compose, and deployed it seamlessly to Google Cloud Run.
 >
 > This demonstrates the power of developer-agent collaboration. Antigravity doesn't just guess—it plans, follows standards, and deploys. Thank you!"
