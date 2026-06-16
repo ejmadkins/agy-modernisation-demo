@@ -27,13 +27,12 @@ A live demo repository demonstrating how to modernize a monolithic legacy .NET F
 
 ## Technical Progression
 
-The demo guides the audience through three progressive stages, mirroring the path of an actual modernization project:
+The demo guides the audience through two progressive stages, mirroring the path of an actual modernization project:
 
 | Stage | Branch | Live Action | backup Branch | Backup Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| **Stage 1: Assessment** | `stage-1-assessment` | Open pre-generated `codmod-full-report-dotnet-mod.html` report to analyze legacy app. | `stage-1-backup` | Shows pre-generated HTML assessment report instantly. |
-| **Stage 2: Modernization** | `stage-2-modernize` | Use `agy` with `.antigravity.md` and `dotnet-modernizer` skill to refactor the app. | `stage-2-backup` | Provides fully modernized C# code + `Dockerfile` + local `compose.yaml`. |
-| **Stage 3: Deployment** | `stage-3-deploy` | Build with Cloud Build & deploy container to Cloud Run live. | `stage-3-backup` | Live working URL link + verified deployed configurations. |
+| **Stage 1: Modernization** | `stage-1-modernize` | Use `agy` with `.antigravity.md` and `dotnet-modernizer` skill to refactor the app. | `stage-1-backup` | Provides fully modernized C# code + `Dockerfile` + local `compose.yaml`. |
+| **Stage 2: Deployment** | `stage-2-deploy` | Build with Cloud Build & deploy container to Cloud Run live. | `stage-2-backup` | Live working URL link + verified deployed configurations. |
 
 ---
 
@@ -51,12 +50,10 @@ To help you deliver a flawless and highly engaging talk, we have provided two gu
 To switch stages or reset to a clean state if something goes wrong, run `./reset.sh` with the desired stage name. This command cleanly terminates any running local containers, discards any uncommitted edits, and checks out the clean stage branch.
 
 ```bash
-./reset.sh 1          # Start Stage 1 (Assessment)
-./reset.sh 1-backup   # Load Stage 1 backup (Pre-generated report)
-./reset.sh 2          # Start Stage 2 (Modernization)
-./reset.sh 2-backup   # Load Stage 2 backup (Completed local .NET 8 codebase)
-./reset.sh 3          # Start Stage 3 (Deployment)
-./reset.sh 3-backup   # Load Stage 3 backup (Completed deployed state)
+./reset.sh 1          # Start Stage 1 (Modernization)
+./reset.sh 1-backup   # Load Stage 1 backup (Completed local .NET 8 codebase)
+./reset.sh 2          # Start Stage 2 (Deployment)
+./reset.sh 2-backup   # Load Stage 2 backup (Completed deployed state)
 ```
 
 ---

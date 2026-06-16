@@ -1,36 +1,32 @@
 #!/bin/bash
 # Demo Reset Script
 # Usage: ./reset.sh <stage>
-# Stages: 1, 2, 3, 1-backup, 2-backup, 3-backup
+# Stages: 1, 2, 1-backup, 2-backup
 
 set -e
 
 STAGE=$1
 
 if [ -z "$STAGE" ]; then
-  echo "Usage: ./reset.sh <1|2|3|1-backup|2-backup|3-backup>"
+  echo "Usage: ./reset.sh <1|2|1-backup|2-backup>"
   echo ""
   echo "Stages:"
-  echo "  1          Stage 1: Assessment (unmodernized code)"
-  echo "  2          Stage 2: Modernization (unmodernized code + .antigravity.md + skill)"
-  echo "  3          Stage 3: Deployment (modernized code + deployment setup)"
-  echo "  1-backup   Pre-generated Stage 1 assessment report"
-  echo "  2-backup   Pre-generated Stage 2 modernized .NET 8 codebase"
-  echo "  3-backup   Pre-deployed verified state"
+  echo "  1          Stage 1: Modernization (unmodernized code + .antigravity.md + skill)"
+  echo "  2          Stage 2: Deployment (modernized code + deployment setup)"
+  echo "  1-backup   Pre-generated Stage 1 modernized .NET 8 codebase"
+  echo "  2-backup   Pre-deployed verified state"
   exit 1
 fi
 
 # Map stage number to branch name
 case "$STAGE" in
-  1)         BRANCH="stage-1-assessment" ;;
-  2)         BRANCH="stage-2-modernize" ;;
-  3)         BRANCH="stage-3-deploy" ;;
+  1)         BRANCH="stage-1-modernize" ;;
+  2)         BRANCH="stage-2-deploy" ;;
   1-backup)  BRANCH="stage-1-backup" ;;
   2-backup)  BRANCH="stage-2-backup" ;;
-  3-backup)  BRANCH="stage-3-backup" ;;
   *)
     echo "Error: Unknown stage '${STAGE}'"
-    echo "Usage: ./reset.sh <1|2|3|1-backup|2-backup|3-backup>"
+    echo "Usage: ./reset.sh <1|2|1-backup|2-backup>"
     exit 1
     ;;
 esac
@@ -77,25 +73,18 @@ echo ""
 
 case "$STAGE" in
   1)
-    echo "Open the pre-generated Migration Center App Modernization Assessment report:"
-    echo "  ./codmod-full-report-dotnet-mod.html"
-    echo ""
-    echo "(Optional) If you ever want to re-generate this report, run:"
-    echo "  codmod create full --codebase ./dotnet-migration-sample --output-path ./codmod-full-report-dotnet-mod.html --experiments=enable_pdf,enable_images --improve-fidelity --intent=MICROSOFT_MODERNIZATION --optional-sections \"files,classes\""
-    ;;
-  2)
     echo "Modernize the .NET application using Antigravity CLI:"
     echo "  cd dotnet-migration-sample"
     echo "  agy \"modernize this .NET application to .NET 8, convert EF6 to EF Core, use PostgreSQL, and containerize\""
     ;;
-  3)
+  2)
     echo "Deploy the application to Google Cloud Run:"
     echo "  cd dotnet-migration-sample"
     echo "  agy \"deploy our application to Cloud Run and verify the deployment URL\""
     ;;
   *-backup)
     echo "This is the pre-generated backup stage."
-    if [ "$STAGE" = "2-backup" ]; then
+    if [ "$STAGE" = "1-backup" ]; then
       echo "To run the application locally:"
       echo "  cd dotnet-migration-sample"
       echo "  docker compose up --build"
