@@ -21,31 +21,10 @@ This cheat-sheet provides all commands, paths, and configurations needed to deli
 
 ## Stage-by-Stage Guide
 
-### Stage 1: Assessment
+### Stage 1: Modernization
 * **Reset Command**:
   ```bash
   ./reset.sh 1
-  ```
-* **Live Action**: Explain the legacy structure, then open the pre-generated assessment report:
-  - Open `./codmod-full-report-dotnet-mod.html` in Chrome to display the report immediately.
-
-  *(Note: Re-generating a new report takes around 15 minutes. If you ever need the command for reference, it is:)*
-  ```bash
-  codmod create full \
-    --codebase ./dotnet-migration-sample \
-    --output-path ./codmod-full-report-dotnet-mod.html \
-    --experiments=enable_pdf,enable_images \
-    --improve-fidelity \
-    --intent=MICROSOFT_MODERNIZATION \
-    --optional-sections "files,classes"
-  ```
-
----
-
-### Stage 2: Modernization
-* **Reset Command**:
-  ```bash
-  ./reset.sh 2
   ```
 * **Live Action**: Open and explain `.antigravity.md` and `.agents/skills/dotnet-modernizer/SKILL.md`. Run `agy` in `dotnet-migration-sample`:
   ```bash
@@ -55,7 +34,7 @@ This cheat-sheet provides all commands, paths, and configurations needed to deli
 * **Fallback Command**:
   ```bash
   cd ..
-  ./reset.sh 2-backup
+  ./reset.sh 1-backup
   ```
 * **Local Verification**:
   ```bash
@@ -70,10 +49,10 @@ This cheat-sheet provides all commands, paths, and configurations needed to deli
 
 ---
 
-### Stage 3: Deployment
+### Stage 2: Deployment
 * **Reset Command**:
   ```bash
-  ./reset.sh 3
+  ./reset.sh 2
   ```
 * **Live Action**: Explain how the image is built using Cloud Build and pushed to Artifact Registry, then deployed to Cloud Run using gcloud.
 * **Build command**:
@@ -95,7 +74,7 @@ This cheat-sheet provides all commands, paths, and configurations needed to deli
 * **Fallback Command**:
   ```bash
   cd ..
-  ./reset.sh 3-backup
+  ./reset.sh 2-backup
   ```
   Open the deployed live URL printed in the output to demonstrate the final working web app.
 
